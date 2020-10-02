@@ -7,7 +7,7 @@ export let dim = 200;
 <div id="grid" style="--dim: {dim}px">
 	{#each values as value (value)}
 	<div>
-		<img width={dim} height={dim} src="https://api.checkface.ml/api/face/?dim={dim}&value={encodeURIComponent(value)}" alt={value}>
+		<img loading=lazy width={dim} height={dim} src="https://api.checkface.ml/api/face/?dim={dim}&value={encodeURIComponent(value)}" alt={value}>
 		<p>{value}</p>
 	</div>
 	{/each}

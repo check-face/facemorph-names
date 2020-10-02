@@ -1,57 +1,37 @@
-<!-- <script>
-	import ImageGrid from './ImageGrid.svelte'
-
-	const chars = 'abcdefghijklmnopqrstuvwxyz'
-
-	let currentVal = 0;
-	let currentPrefix = "";
-	$: {
-		let v = "";
-		let c = currentVal - 1;
-		if(c == 0) { v = chars[0] }
-		while(c > 0) {
-			v = chars[(c % chars.length)] + v
-			c = Math.floor(c / chars.length)
-		}
-		currentPrefix = v;
-	}
-
-	let values = [ ];
-	$: {
-		values = [ ];
-		for(let i = 0; i < chars.length; i++) {
-			values.push(currentPrefix + chars[i]);
-		}
-	}
-</script>
-
-<h1>Current prefix: {currentPrefix}</h1>
-<div style="float: right">
-	<button disabled={currentVal <= 0} on:click={() => currentVal -= 1}>Prev</button>
-	<button on:click={() => currentVal += 1}>Next</button>
-</div>
-
-
-<ImageGrid {values} ></ImageGrid>
-
-<style>
-h1 {
-	display: inline;
-	padding-right: 1em;
-	font-family: sans-serif;
-}
-</style> -->
-
 <script>
+// import VirtualList from '@sveltejs/svelte-virtual-list';
+import VirtualList from './VirtualList.svelte';
+import SvelteInfiniteScroll from "svelte-infinite-scroll";
 import ImageGrid from './ImageGrid.svelte'
-// import values from './greetings.js'
-import babynames from './babynames.js'
+import names from './babynames.js'
 
-const distinct = (value, index, self) => {
-	return self.indexOf(value) === index;
+
+function chunk(arr, chunkSize) {
+	var R = [];
+	for (var i=0,len=arr.length; i<len; i+=chunkSize)
+    R.push(arr.slice(i,i+chunkSize));
+	return R;
 }
 
-let values = babynames.slice(0, 100).map(name => name.toLowerCase())
-</script>
+let chunks = chunk(names.map(name => name.toLowerCase()), 24)
 
-<ImageGrid values={values}></ImageGrid>
+let size = 2
+let page = 2
+let virtualList
+
+let items = chunks.splice(0, page * size);
+$: items = [
+	...items,
+	...chunks.slice(page * size, size * (page + 1))
+]
+
+function loadMore() {
+	console.log("loadmore")
+	page += 1;
+}
+</script>
+<VirtualList bind:viewport={virtualList} items={items} let:item>
+
+<ImageGrid values={item}></ImageGrid>
+</VirtualList>
+<SvelteInfiniteScroll threshold={100} elementScroll={virtualList} on:loadMore={loadMore} />
