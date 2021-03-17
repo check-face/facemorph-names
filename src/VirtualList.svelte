@@ -16,6 +16,7 @@
 	let height_map = [];
 	let rows;
 	export let viewport;
+	export let viewportWidth;
 	let contents;
 	let viewport_height = 0;
 	let visible;
@@ -120,6 +121,7 @@
 
 <svelte-virtual-list-viewport
 	bind:this={viewport}
+	bind:clientWidth={viewportWidth}
 	bind:offsetHeight={viewport_height}
 	on:scroll={handle_scroll}
 	style="height: {height};"

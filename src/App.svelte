@@ -15,17 +15,25 @@
 		return R;
 	}
 
-	let chunks = chunk(
+	function getChunkSize(width, imageDim) {
+		let n = Math.floor(width / imageDim);
+		if(!(24 % n)) return 24;
+		else return 3 * n;
+	}
+
+	const dim = 200;
+	let gridWidth = 0; //bind to VirtualList viewportWidth
+	$: chunkSize = getChunkSize(gridWidth, dim);
+	$: chunks = chunk(
 		names.map((name) => name.toLowerCase()),
-		24
+		chunkSize
 	);
 
 	let size = 2;
 	let page = 2;
 	let virtualList;
 
-	let items = chunks.splice(0, page * size);
-	$: items = [...items, ...chunks.slice(page * size, size * (page + 1))];
+	$: items = chunks.slice(0, size * (page + 1));
 
 	function loadMore() {
 		console.log("loadmore");
@@ -64,15 +72,15 @@
 {#if selectedValue !== null}
 	<div class="selected-image" out:scale={{ duration: 400 }}>
 		<LabelledImageButton
-			dim="200"
+			{dim}
 			value={selectedValue}
 			hasX
 			on:imageClicked={selectedImageClicked}
 		/>
 	</div>
 {/if}
-<VirtualList bind:viewport={virtualList} {items} let:item>
-	<ImageGrid values={item} on:imageClicked={imageClicked} />
+<VirtualList bind:viewport={virtualList} bind:viewportWidth={gridWidth} {items} let:item>
+	<ImageGrid values={item} on:imageClicked={imageClicked} {dim} />
 </VirtualList>
 <SvelteInfiniteScroll
 	threshold={100}
