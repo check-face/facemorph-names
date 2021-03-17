@@ -3,7 +3,7 @@
 	import VirtualList from "./VirtualList.svelte";
 	import SvelteInfiniteScroll from "svelte-infinite-scroll";
 	import ImageGrid from "./ImageGrid.svelte";
-	import LabelledImage from "./LabelledImage.svelte";
+	import LabelledImageButton from "./LabelledImageButton.svelte";
 	import names from "./babynames.js";
 	import * as checkface from "./checkface";
 	import { scale } from 'svelte/transition';
@@ -36,22 +36,37 @@
 
 	function imageClicked(event) {
 		if (selectedValue !== null) {
-			window.location.href = checkface.facemorph(selectedValue, event.detail);
+			let url = checkface.facemorph(selectedValue, event.detail.value);
+			if(event.detail.event.ctrlKey) {
+				window.open(url);
+			}
+			else {
+				window.location.href = url;
+			}
 		} else {
-			selectedValue = event.detail;
+			selectedValue = event.detail.value;
 		}
 	}
 
 	function selectedImageClicked() {
 		selectedValue = null;
 	}
+
+	function windowKeyDown(event) {
+		if(event.key === "Escape") {
+			selectedValue = null;
+		}
+	}
 </script>
+
+<svelte:window on:keydown={windowKeyDown}/>
 
 {#if selectedValue !== null}
 	<div class="selected-image" out:scale={{ duration: 400 }}>
-		<LabelledImage
+		<LabelledImageButton
 			dim="200"
 			value={selectedValue}
+			hasX
 			on:imageClicked={selectedImageClicked}
 		/>
 	</div>
@@ -73,35 +88,7 @@
 		z-index: 3;
 		margin: 0;
 		animation: fadeUp 0.4s ease;
-		box-shadow: 3px 4px 8px rgb(0 0 0 / 50%);
-	}
-
-	.selected-image::before {
-		content: 'x';
-		font-size: 10em;
-		color: rgba(255, 255, 255, 0.829);
-		font-family: Arial, sans-serif;
-		text-shadow: 2px 2px black;
-		font-family: sans-serif;
-
-		z-index: 5;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		text-align: center;
-
-		opacity: 0;
-		transform: rotate(-90deg);
-		transition: opacity 0.2s, transform 0.2s;
-
-		pointer-events: none;
-	}
-
-	.selected-image:hover::before {
-		opacity: 1;
-		transform: rotate(0);
+		box-shadow: 4px 5px 8px rgb(0 0 0 / 80%);
 	}
 
 	@keyframes fadeUp {
