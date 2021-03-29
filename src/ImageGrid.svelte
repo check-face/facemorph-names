@@ -14,7 +14,7 @@
 <style>
 	#grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(var(--dim), 1fr));
-		/* grid-template-columns: repeat(auto-fit, minmax(auto, 150px)); */
+		--mdim: min(var(--dim), 35vw); /* 1/3 < 35vw < 1/2 : on small screens, try to have at minimum 2 columns */
+		grid-template-columns: repeat(auto-fit, minmax(var(--mdim), 1fr));
 	}
 </style>
