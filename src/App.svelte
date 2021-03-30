@@ -43,8 +43,11 @@
 	let selectedValue = null;
 
 	function imageClicked(event) {
+		let clickedValue = event.detail.value
+		const targetOrigin = "*"
+		window.parent.postMessage({ "value": clickedValue }, targetOrigin) // When in iframe allows any origin see what names you click
 		if (selectedValue !== null) {
-			let url = checkface.facemorph(selectedValue, event.detail.value);
+			let url = checkface.facemorph(selectedValue, clickedValue);
 			if(event.detail.event.ctrlKey) {
 				window.open(url);
 			}
@@ -52,7 +55,7 @@
 				window.location.href = url;
 			}
 		} else {
-			selectedValue = event.detail.value;
+			selectedValue = clickedValue;
 		}
 	}
 
